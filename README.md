@@ -21,7 +21,9 @@ Demonstrates how AI chatbots can adapt to different business needs.
 
 ## 📂 Project Structure
 src/app/page.tsx -> Landing page
+
 src/app/chat/page.tsx -> Main chatbot UI
+
 src/app/api/chat/route.ts -> API route that talks to OpenAI
 
 
@@ -29,6 +31,7 @@ src/app/api/chat/route.ts -> API route that talks to OpenAI
 
 # 1. Clone the repo
 git clone https://github.com/hetxtd/business-chatbot-demo.git
+
 cd business-chatbot-demo
 
 # 2. Install dependencies
@@ -41,7 +44,8 @@ echo "OPENAI_API_KEY=your_key_here" > .env.local
 npm run dev
 The app will be available at http://localhost:3000 (or next free port).
 
-📸 Screenshot
+## 📸 Screenshot
+![Chatbot Screenshot](public/screenshot.png)
 
 
 👤 Author
