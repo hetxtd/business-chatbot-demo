@@ -2,6 +2,9 @@
 A production-style chatbot built with **Next.js, Tailwind and OpenAI**.  
 Demonstrates how AI chatbots can adapt to different business needs.
 
+🔗 Live Demo: [business-chatbot-demo.vercel.app](https://business-chatbot-demo.vercel.app)
+
+
 - Customer Support  
 - Sales Assistant  
 - Booking Assistant  
