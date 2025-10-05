@@ -52,7 +52,7 @@ const [mode, setMode] = useState<Mode>("support");
       <Card className="shadow-lg">
       <CardHeader className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
   <div>
-    <CardTitle className="text-xl">Business Chatbot Demo</CardTitle>
+    <CardTitle className="text-xl">Business AI Chatbot Demo</CardTitle>
     <p className="text-sm text-muted-foreground">
       Support, sales, booking, and tech help in one place.
     </p>
