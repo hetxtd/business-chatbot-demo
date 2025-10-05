@@ -9,51 +9,57 @@ async function getFaqs(): Promise<string> {
   try {
     const text = await readFile(process.cwd() + "/src/data/faqs.md", "utf8");
     cachedFaqs = text.slice(0, 2000); // keep it concise
-  } catch {}
+  } catch {
+    cachedFaqs = "";
+  }
   return cachedFaqs;
 }
 
-
-/**
- * Small set of 'personalities' for the bot.
- * You can add more later (e.g., 'tech', 'legal', 'fitness').
- */
 const MODES: Record<string, string> = {
-  support: "You are a friendly customer support assistant. Be clear and helpful.",
-  sales: "You are a helpful sales assistant. Focus on value and next steps.",
-  booking: "You are a booking assistant. Confirm details and suggest available slots.",
-  tech: "You are a calm technical support assistant. Explain step by step.",
+  support:
+    "You are a friendly customer support assistant. Be clear and helpful. UK tone.",
+  sales:
+    "You are a helpful sales assistant. Ask up to 2 brief clarifying questions, then suggest next steps. UK tone.",
+  booking:
+    "You are a booking assistant. Confirm details and suggest available slots. UK tone.",
+  tech:
+    "You are a calm technical support assistant. Explain step by step, avoid jargon unless asked. UK tone.",
 };
 
+// Guardrails to force using our context for policy-ish questions
+const RAG_RULES = `
+You are given BUSINESS CONTEXT. When asked about delivery, returns, hours, warranty, or contact,
+you MUST answer using ONLY the BUSINESS CONTEXT. If the context doesn't contain the answer,
+say "I don't know from the provided info." Keep answers brief (2-4 sentences).
+`;
 
 export async function POST(req: NextRequest) {
   try {
+    const { message, mode } = await req.json();
 
-const { message, mode } = await req.json();
-const systemPrompt = MODES[mode] ?? MODES.support;
-const faqs = await getFaqs();
-const context = faqs ? `Use this business context when relevant:\n\n${faqs}` : "";
+    const faqs = await getFaqs();
+    const contextBlock = faqs ? `\n\nBUSINESS CONTEXT:\n${faqs}` : "";
 
+    // One strong system message: mode + rules + context
+    const systemPrompt =
+      (MODES[mode as string] ?? MODES.support) +
+      "\n" +
+      RAG_RULES +
+      contextBlock;
 
-    // 3) Ask OpenAI for a reply (simple, non-streaming)
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
+      temperature: 0.2,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: String(message ?? "") },
-        { role: "system", content: systemPrompt },
-        ...(context ? [{ role: "system", content: context }] as const : []),
-        { role: "user", content: String(message ?? "") },
       ],
-      temperature: 0.5,
     });
 
-    // 4) Extract reply text safely
     const reply =
       completion.choices?.[0]?.message?.content ??
       "Sorry, I couldn't think of a reply.";
 
-    // 5) Send result back as JSON
     return NextResponse.json({ reply });
   } catch (err) {
     console.error("API /api/chat error:", err);
