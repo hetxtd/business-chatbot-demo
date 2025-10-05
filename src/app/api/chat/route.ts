@@ -1,6 +1,18 @@
 // src/app/api/chat/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { openai } from "@/lib/openai";
+import { readFile } from "fs/promises";
+
+let cachedFaqs = "";
+async function getFaqs(): Promise<string> {
+  if (cachedFaqs) return cachedFaqs;
+  try {
+    const text = await readFile(process.cwd() + "/src/data/faqs.md", "utf8");
+    cachedFaqs = text.slice(0, 2000); // keep it concise
+  } catch {}
+  return cachedFaqs;
+}
+
 
 /**
  * Small set of 'personalities' for the bot.
@@ -19,6 +31,8 @@ export async function POST(req: NextRequest) {
 
 const { message, mode } = await req.json();
 const systemPrompt = MODES[mode] ?? MODES.support;
+const faqs = await getFaqs();
+const context = faqs ? `Use this business context when relevant:\n\n${faqs}` : "";
 
 
     // 3) Ask OpenAI for a reply (simple, non-streaming)
@@ -26,6 +40,9 @@ const systemPrompt = MODES[mode] ?? MODES.support;
       model: "gpt-4o-mini",
       messages: [
         { role: "system", content: systemPrompt },
+        { role: "user", content: String(message ?? "") },
+        { role: "system", content: systemPrompt },
+        ...(context ? [{ role: "system", content: context }] as const : []),
         { role: "user", content: String(message ?? "") },
       ],
       temperature: 0.5,
