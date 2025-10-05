@@ -1,19 +1,25 @@
 // src/app/api/chat/route.ts
+export const runtime = "nodejs"; // ensure fs is allowed
+
 import { NextRequest, NextResponse } from "next/server";
 import { openai } from "@/lib/openai";
 import { readFile } from "fs/promises";
+import path from "path";
 
 let cachedFaqs = "";
 async function getFaqs(): Promise<string> {
   if (cachedFaqs) return cachedFaqs;
   try {
-    const text = await readFile(process.cwd() + "/src/data/faqs.md", "utf8");
-    cachedFaqs = text.slice(0, 2000); // keep it concise
-  } catch {
+    const filePath = path.join(process.cwd(), "public", "faqs.md");
+    const text = await readFile(filePath, "utf8");
+    cachedFaqs = text.slice(0, 2000);
+  } catch (e) {
+    console.error("Failed to read faqs.md", e);
     cachedFaqs = "";
   }
   return cachedFaqs;
 }
+
 
 const MODES: Record<string, string> = {
   support:

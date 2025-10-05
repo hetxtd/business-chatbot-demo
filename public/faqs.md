@@ -6,4 +6,3 @@
 **Warranty:** 12 months manufacturer warranty.
 **Contact:** support@nasirchatbot.com
 **Sanity token:** ZX-42
-
