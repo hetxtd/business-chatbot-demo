@@ -5,4 +5,3 @@
 **Support hours:** Mon–Fri, 9:00–17:00 UK time.
 **Warranty:** 12 months manufacturer warranty.
 **Contact:** support@nasirchatbot.com
-**Sanity token:** ZX-42

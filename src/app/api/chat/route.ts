@@ -35,9 +35,8 @@ const MODES: Record<string, string> = {
 // Guardrails to force using our context for policy-ish questions
 const RAG_RULES = `
 You are given BUSINESS CONTEXT. For ANY factual question, prefer facts from the BUSINESS CONTEXT.
-If the context contains the term or answer (e.g., "sanity token"), answer from it.
 If the context doesn't contain the answer, say "I don't know from the provided info."
-Keep answers brief (2–4 sentences), UK tone.
+Keep answers brief (2-4 sentences), UK tone.
 `;
 
 
